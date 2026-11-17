@@ -1,0 +1,337 @@
+{
+  "schema": 1,
+  "docsRoot": "https://docs.copilotkit.ai/vue",
+  "syncedAt": "2026-11-12T16:49:54.201Z",
+  "pages": {
+    "/vue": {
+      "file": "vue.md",
+      "sha256": "e226a7d6bea3a0b0f75a11437584b03ff6d156fb00ca7eb9fa1c94f88716bba1",
+      "bytes": 8126,
+      "lines": 201,
+      "routes": [
+        "/",
+        "/quickstart"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:54 GMT"
+    },
+    "/vue/custom-look-and-feel/headless-ui": {
+      "file": "vue__custom-look-and-feel__headless-ui.md",
+      "sha256": "92724060f05c4ee5805826b85f9ad50e388e103e921481c75c5bba1923ade1f0",
+      "bytes": 7161,
+      "lines": 195,
+      "routes": [
+        "/custom-look-and-feel/headless-ui"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:54 GMT"
+    },
+    "/vue/custom-look-and-feel/slots": {
+      "file": "vue__custom-look-and-feel__slots.md",
+      "sha256": "992430bb56a5ab1d285cfae290b94341e89d1e3a910166d582a705103c1db89e",
+      "bytes": 8806,
+      "lines": 270,
+      "routes": [
+        "/custom-look-and-feel/slots"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/frontend-tools": {
+      "file": "vue__frontend-tools.md",
+      "sha256": "c039a209fbfeae2f5121070e825d0a25f39f21b5466a89185fd69365b47a903d",
+      "bytes": 3136,
+      "lines": 76,
+      "routes": [
+        "/frontend-tools"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/generative-ui/mcp-apps": {
+      "file": "vue__generative-ui__mcp-apps.md",
+      "sha256": "a56ae2f57bffbfdd5959094850de7ba2284895815ad13cd3fe7df5c3d2ff6ee6",
+      "bytes": 5472,
+      "lines": 155,
+      "routes": [
+        "/generative-ui/mcp-apps"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/generative-ui/state-rendering": {
+      "file": "vue__generative-ui__state-rendering.md",
+      "sha256": "7056976a9c0cf9f1dc7133b5189f15e6ffbd52a4c6ee74abc93054fc3b3c6985",
+      "bytes": 5825,
+      "lines": 156,
+      "routes": [
+        "/generative-ui/state-rendering"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/generative-ui/tool-based": {
+      "file": "vue__generative-ui__tool-based.md",
+      "sha256": "8f184262b1c1d12c2b476552fc05cae6fabeacc6096300c1e138fe8b7e5b534e",
+      "bytes": 3432,
+      "lines": 84,
+      "routes": [
+        "/generative-ui/tool-based"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/generative-ui/tool-rendering": {
+      "file": "vue__generative-ui__tool-rendering.md",
+      "sha256": "7197386058de8098efdee1de5573cc4f5821b9f2d7658cc13a1309618a6b671e",
+      "bytes": 6467,
+      "lines": 164,
+      "routes": [
+        "/generative-ui/tool-rendering"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/headless-threads": {
+      "file": "vue__headless-threads.md",
+      "sha256": "c9348d1f1288577e383e8933f6dd2deda47770160a1a3b6f953a1f45a6a2c642",
+      "bytes": 7490,
+      "lines": 182,
+      "routes": [
+        "/headless-threads"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/human-in-the-loop": {
+      "file": "vue__human-in-the-loop.md",
+      "sha256": "f338a7d96ba67601885efdc179c5e178f61c71daadc4f70ee3da6e9a9da1b03d",
+      "bytes": 4044,
+      "lines": 80,
+      "routes": [
+        "/human-in-the-loop"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/human-in-the-loop/governed-actions": {
+      "file": "vue__human-in-the-loop__governed-actions.md",
+      "sha256": "6108b33ad1000801d9062b0cd869240c294ad278ee202eaae810db0217a636ac",
+      "bytes": 8125,
+      "lines": 247,
+      "routes": [
+        "/human-in-the-loop/governed-actions"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/human-in-the-loop/headless": {
+      "file": "vue__human-in-the-loop__headless.md",
+      "sha256": "1421af3fd0022ac1f34f5f5f1a7205c44543d1efc5bfeeffd9d9022cfaf888f4",
+      "bytes": 1892,
+      "lines": 51,
+      "routes": [
+        "/human-in-the-loop/headless"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/human-in-the-loop/useInterrupt": {
+      "file": "vue__human-in-the-loop__useInterrupt.md",
+      "sha256": "ba3edf9554cb274ab25ddc171bc8ca7c5137a2c0295b0d5400dc164892b60d0a",
+      "bytes": 4842,
+      "lines": 123,
+      "routes": [
+        "/human-in-the-loop/useInterrupt"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/multi-agent/subagents": {
+      "file": "vue__multi-agent__subagents.md",
+      "sha256": "28eb9b5df11f29e150a900231dd28622f9c0474965f761f96a6a228932f1b6d3",
+      "bytes": 16393,
+      "lines": 442,
+      "routes": [
+        "/multi-agent/subagents"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/prebuilt-components": {
+      "file": "vue__prebuilt-components.md",
+      "sha256": "5770f864e2818c2866aa2c840411d4b66d29b938a03e05030a6d8daf150b4dd7",
+      "bytes": 2652,
+      "lines": 70,
+      "routes": [
+        "/prebuilt-components"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:55 GMT"
+    },
+    "/vue/prebuilt-components/copilot-threads-drawer": {
+      "file": "vue__prebuilt-components__copilot-threads-drawer.md",
+      "sha256": "1d62264c5e354309048ff24102c36bbe56225579e27b5399ce322c7e752d1aaa",
+      "bytes": 10407,
+      "lines": 243,
+      "routes": [
+        "/prebuilt-components/copilot-threads-drawer"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:56 GMT"
+    },
+    "/vue/programmatic-control": {
+      "file": "vue__programmatic-control.md",
+      "sha256": "383121193a14cc7a5648326ec134d19135a6f0158514964b44fc34ddc85e07b7",
+      "bytes": 4406,
+      "lines": 121,
+      "routes": [
+        "/programmatic-control"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:56 GMT"
+    },
+    "/vue/shared-state": {
+      "file": "vue__shared-state.md",
+      "sha256": "2bc52937f566422ee05932a53d74f3f73d29a2015e19b7bbe59b375b6c0ddf68",
+      "bytes": 7789,
+      "lines": 208,
+      "routes": [
+        "/shared-state"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:56 GMT"
+    },
+    "/vue/shared-state/agent-readonly": {
+      "file": "vue__shared-state__agent-readonly.md",
+      "sha256": "6ce91d6594da6cce90e61281e19430ad7f8b5ed07771ecb93de4eabeae24a61e",
+      "bytes": 3420,
+      "lines": 77,
+      "routes": [
+        "/shared-state/agent-readonly"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:56 GMT"
+    },
+    "/vue/shared-state/rendering-in-app": {
+      "file": "vue__shared-state__rendering-in-app.md",
+      "sha256": "b7876584b027df10c23b820b94a96f08bec6ed406e50ae9a969bdfca508ac01a",
+      "bytes": 5099,
+      "lines": 128,
+      "routes": [
+        "/shared-state/rendering-in-app"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:56 GMT"
+    },
+    "/vue/shared-state/streaming": {
+      "file": "vue__shared-state__streaming.md",
+      "sha256": "c624afbc96618cb4657a9a486b9f0f02418dd1d8acc5b6373a2e691bc7841c1f",
+      "bytes": 6596,
+      "lines": 170,
+      "routes": [
+        "/shared-state/streaming"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:56 GMT"
+    },
+    "/vue/webmcp": {
+      "file": "vue__webmcp.md",
+      "sha256": "7ca144f8763d5d77a4015b683dbc0174bcfd5b0e9a38c9fd79cec266ed0cde18",
+      "bytes": 7236,
+      "lines": 161,
+      "routes": [
+        "/webmcp"
+      ],
+      "status": "ok",
+      "age": 0,
+      "date": "Thu, 12 Nov 2026 16:49:56 GMT"
+    }
+  },
+  "sitemap": {
+    "fetchedAt": "2026-11-12T16:49:54.201Z",
+    "urlsUnderRoot": 80,
+    "knownUnmapped": [
+      "https://docs.copilotkit.ai/vue/AG-UI-Streams",
+      "https://docs.copilotkit.ai/vue/agentic-protocols",
+      "https://docs.copilotkit.ai/vue/agentic-protocols/a2a",
+      "https://docs.copilotkit.ai/vue/agentic-protocols/ag-ui",
+      "https://docs.copilotkit.ai/vue/agentic-protocols/ag-ui-middleware",
+      "https://docs.copilotkit.ai/vue/agentic-protocols/mcp",
+      "https://docs.copilotkit.ai/vue/backend/ag-ui",
+      "https://docs.copilotkit.ai/vue/backend/agent-runner",
+      "https://docs.copilotkit.ai/vue/backend/copilot-runtime",
+      "https://docs.copilotkit.ai/vue/backend/custom-ag-ui-agent",
+      "https://docs.copilotkit.ai/vue/backend/custom-agent",
+      "https://docs.copilotkit.ai/vue/backend/message-history",
+      "https://docs.copilotkit.ai/vue/backend/runtime-endpoints",
+      "https://docs.copilotkit.ai/vue/backend/self-managed-agents",
+      "https://docs.copilotkit.ai/vue/build-with-agents",
+      "https://docs.copilotkit.ai/vue/community-frameworks",
+      "https://docs.copilotkit.ai/vue/concepts/architecture",
+      "https://docs.copilotkit.ai/vue/concepts/generative-ui-overview",
+      "https://docs.copilotkit.ai/vue/concepts/oss-vs-enterprise",
+      "https://docs.copilotkit.ai/vue/concepts/which-hook",
+      "https://docs.copilotkit.ai/vue/custom-look-and-feel/css",
+      "https://docs.copilotkit.ai/vue/custom-look-and-feel/reasoning-messages",
+      "https://docs.copilotkit.ai/vue/deploy/agentcore",
+      "https://docs.copilotkit.ai/vue/deploy/aws-lambda",
+      "https://docs.copilotkit.ai/vue/deploy/langsmith",
+      "https://docs.copilotkit.ai/vue/generative-ui/reasoning",
+      "https://docs.copilotkit.ai/vue/inspector",
+      "https://docs.copilotkit.ai/vue/intelligence/analytics",
+      "https://docs.copilotkit.ai/vue/intelligence/bring-your-own-thread-system",
+      "https://docs.copilotkit.ai/vue/intelligence/captured-data",
+      "https://docs.copilotkit.ai/vue/intelligence/channels",
+      "https://docs.copilotkit.ai/vue/intelligence/intelligence-platform",
+      "https://docs.copilotkit.ai/vue/intelligence/learned-skills",
+      "https://docs.copilotkit.ai/vue/intelligence/managed-intelligence-platform",
+      "https://docs.copilotkit.ai/vue/intelligence/memories",
+      "https://docs.copilotkit.ai/vue/intelligence/overview",
+      "https://docs.copilotkit.ai/vue/intelligence/plans",
+      "https://docs.copilotkit.ai/vue/intelligence/quickstart",
+      "https://docs.copilotkit.ai/vue/intelligence/self-hosting",
+      "https://docs.copilotkit.ai/vue/intelligence/self-hosting-ecs",
+      "https://docs.copilotkit.ai/vue/intelligence/self-hosting-local",
+      "https://docs.copilotkit.ai/vue/intelligence/standalone-collector",
+      "https://docs.copilotkit.ai/vue/intelligence/threads-explained",
+      "https://docs.copilotkit.ai/vue/intelligence/trajectories",
+      "https://docs.copilotkit.ai/vue/intelligence/trajectories-reference",
+      "https://docs.copilotkit.ai/vue/learning",
+      "https://docs.copilotkit.ai/vue/multimodal-attachments",
+      "https://docs.copilotkit.ai/vue/prebuilt-components/chat",
+      "https://docs.copilotkit.ai/vue/prebuilt-components/chat-controls",
+      "https://docs.copilotkit.ai/vue/prebuilt-components/popup",
+      "https://docs.copilotkit.ai/vue/prebuilt-components/sidebar",
+      "https://docs.copilotkit.ai/vue/runtime-server-adapter",
+      "https://docs.copilotkit.ai/vue/threads-import",
+      "https://docs.copilotkit.ai/vue/threads-lifecycle",
+      "https://docs.copilotkit.ai/vue/troubleshooting/common-issues",
+      "https://docs.copilotkit.ai/vue/troubleshooting/debug-mode",
+      "https://docs.copilotkit.ai/vue/troubleshooting/event-inspector",
+      "https://docs.copilotkit.ai/vue/using-these-docs",
+      "https://docs.copilotkit.ai/vue/voice"
+    ]
+  }
+}

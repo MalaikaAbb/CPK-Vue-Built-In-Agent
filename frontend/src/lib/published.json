@@ -1,0 +1,550 @@
+{
+ "index": [
+  {
+   "lang": "bash",
+   "title": null,
+   "code": "npm create vue@latest my-copilot-app\ncd my-copilot-app\nnpm install",
+   "rendered": true
+  },
+  {
+   "lang": "bash",
+   "title": null,
+   "code": "npm install @copilotkit/vue @copilotkit/runtime\nnpm install -D tsx typescript @types/node",
+   "rendered": true
+  },
+  {
+   "lang": "bash",
+   "title": null,
+   "code": "pnpm add @copilotkit/vue @copilotkit/runtime\npnpm add -D tsx typescript @types/node",
+   "rendered": true
+  },
+  {
+   "lang": "bash",
+   "title": null,
+   "code": "yarn add @copilotkit/vue @copilotkit/runtime\nyarn add -D tsx typescript @types/node",
+   "rendered": true
+  },
+  {
+   "lang": "ts",
+   "title": "server.ts",
+   "code": "import { createServer } from \"node:http\";\nimport { BuiltInAgent, CopilotRuntime } from \"@copilotkit/runtime/v2\";\nimport { createCopilotNodeListener } from \"@copilotkit/runtime/v2/node\";\n\nconst runtime = new CopilotRuntime({\n  agents: {\n    default: new BuiltInAgent({\n      model: \"openai:gpt-6-luna\",\n      prompt: \"You are a helpful assistant for a Vue app.\",\n    }),\n  },\n});\n\nconst port = Number(process.env.PORT ?? 8200);\n\ncreateServer(\n  createCopilotNodeListener({\n    runtime,\n    basePath: \"/api/copilotkit\",\n    cors: true,\n  }),\n).listen(port, () => {\n  console.log(\n    `Copilot Runtime listening at http://localhost:${port}/api/copilotkit`,\n  );\n});",
+   "rendered": true
+  },
+  {
+   "lang": "ts",
+   "title": "src/main.ts",
+   "code": "import { createApp } from \"vue\";\nimport App from \"./App.vue\";\nimport \"@copilotkit/vue/styles.css\";\n\ncreateApp(App).mount(\"#app\");",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotKitProvider, CopilotChat } from \"@copilotkit/vue/v2\";\n</script>\n\n<template>\n  <CopilotKitProvider\n    runtime-url=\"http://localhost:8200/api/copilotkit\"\n  >\n    <div style=\"height: 100vh\">\n      <CopilotChat />\n    </div>\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "bash",
+   "title": null,
+   "code": "export OPENAI_API_KEY=sk-...\nnpx tsx server.ts",
+   "rendered": true
+  },
+  {
+   "lang": "bash",
+   "title": null,
+   "code": "npm run dev",
+   "rendered": true
+  }
+ ],
+ "custom-look-and-feel__headless-ui": [
+  {
+   "lang": "vue",
+   "title": "HeadlessChat.vue",
+   "code": "<script setup lang=\"ts\">\nimport { computed, ref } from \"vue\";\nimport { useAgent, useCopilotKit } from \"@copilotkit/vue/v2\";\n\nconst { agent } = useAgent({ agentId: \"my-agent\" });\nconst { copilotkit } = useCopilotKit();\nconst input = ref(\"\");\nconst messages = computed(() => agent.value?.messages ?? []);\nconst isRunning = computed(() => agent.value?.isRunning ?? false);\n\nasync function submit() {\n  const current = agent.value;\n  const content = input.value.trim();\n  if (!current || !content || isRunning.value) return;\n\n  current.addMessage({\n    id: crypto.randomUUID(),\n    role: \"user\",\n    content,\n  });\n  input.value = \"\";\n  await copilotkit.value.runAgent({ agent: current });\n}\n</script>\n\n<template>\n  <section aria-live=\"polite\">\n    <article v-for=\"message in messages\" :key=\"message.id\" :data-role=\"message.role\">\n      {{ message.content }}\n    </article>\n    <p v-if=\"isRunning\">Thinking\u2026</p>\n    <form @submit.prevent=\"submit\">\n      <input v-model=\"input\" aria-label=\"Message\" />\n      <button type=\"submit\" :disabled=\"isRunning\">Send</button>\n    </form>\n  </section>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotKitProvider runtime-url=\"/api/copilotkit\">\n  <CopilotChatConfigurationProvider agent-id=\"my-agent\">\n    <HeadlessChat />\n  </CopilotChatConfigurationProvider>\n</CopilotKitProvider>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "RenderedMessages.vue",
+   "code": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport {\n  CopilotChatAssistantMessage,\n  CopilotChatMessageView,\n  CopilotChatUserMessage,\n  useAgent,\n} from \"@copilotkit/vue/v2\";\n\nconst { agent } = useAgent({ agentId: \"my-agent\" });\nconst messages = computed(() => agent.value?.messages ?? []);\nconst isRunning = computed(() => agent.value?.isRunning ?? false);\n</script>\n\n<template>\n  <CopilotChatMessageView :messages=\"messages\" :is-running=\"isRunning\">\n    <template #assistant-message=\"assistantProps\">\n      <article class=\"assistant-bubble\">\n        <CopilotChatAssistantMessage v-bind=\"assistantProps\" />\n      </article>\n    </template>\n    <template #user-message=\"userProps\">\n      <article class=\"user-bubble\">\n        <CopilotChatUserMessage v-bind=\"userProps\" />\n      </article>\n    </template>\n  </CopilotChatMessageView>\n</template>",
+   "rendered": true
+  }
+ ],
+ "custom-look-and-feel__slots": [
+  {
+   "lang": "vue",
+   "title": "SupportChat.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat } from \"@copilotkit/vue/v2\";\n</script>\n\n<template>\n  <CopilotChat>\n    <template #welcome-screen=\"{ onSubmitMessage }\">\n      <section class=\"welcome-card\">\n        <h2>How can we help?</h2>\n        <button type=\"button\" @click=\"onSubmitMessage('Show my open tickets')\">\n          Show my open tickets\n        </button>\n      </section>\n    </template>\n  </CopilotChat>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "SupportChat.vue",
+   "code": "<script setup lang=\"ts\">\nimport {\n  CopilotChat,\n  CopilotChatAssistantMessage,\n  CopilotChatMessageView,\n} from \"@copilotkit/vue/v2\";\n</script>\n\n<template>\n  <CopilotChat>\n    <template #message-view=\"{ messages, isRunning }\">\n      <CopilotChatMessageView :messages=\"messages\" :is-running=\"isRunning\">\n        <template #assistant-message=\"{ message, messages: allMessages, isRunning: running }\">\n          <CopilotChatAssistantMessage\n            :message=\"message\"\n            :messages=\"allMessages\"\n            :is-running=\"running\"\n          >\n            <template #toolbar-items>\n              <span class=\"reviewed-badge\">Reviewed</span>\n            </template>\n          </CopilotChatAssistantMessage>\n        </template>\n      </CopilotChatMessageView>\n    </template>\n  </CopilotChat>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotChat>\n  <template #input=\"inputProps\">\n    <CopilotChatInput v-bind=\"inputProps\">\n      <template #disclaimer>\n        <p class=\"support-disclaimer\">Responses may be inaccurate.</p>\n      </template>\n    </CopilotChatInput>\n  </template>\n</CopilotChat>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotChat>\n  <template #message-view=\"{ messages, isRunning }\">\n    <CopilotChatMessageView\n      class=\"rounded-xl bg-gray-50 p-4 dark:bg-gray-900\"\n      :messages=\"messages\"\n      :is-running=\"isRunning\"\n    />\n  </template>\n</CopilotChat>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotChat>\n  <template #message-view=\"slotProps\">\n    <CopilotChatMessageView\n      v-bind=\"slotProps\"\n      class=\"my-custom-messages\"\n      data-testid=\"message-view\"\n    />\n  </template>\n</CopilotChat>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotChat>\n  <template #message-view=\"{ messages, isRunning }\">\n    <CustomMessageView :messages=\"messages\" :is-running=\"isRunning\" />\n  </template>\n</CopilotChat>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotChat>\n  <template #message-view=\"{ messages, isRunning }\">\n    <CopilotChatMessageView :messages=\"messages\" :is-running=\"isRunning\">\n      <template #assistant-message=\"assistantProps\">\n        <CopilotChatAssistantMessage v-bind=\"assistantProps\">\n          <template #toolbar-items>\n            <CustomToolbarAction />\n          </template>\n        </CopilotChatAssistantMessage>\n      </template>\n    </CopilotChatMessageView>\n  </template>\n</CopilotChat>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotChatAssistantMessage v-bind=\"assistantProps\">\n  <template #copy-button=\"{ onCopy }\">\n    <button type=\"button\" @click=\"onCopy\">Copy response</button>\n  </template>\n</CopilotChatAssistantMessage>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotChat\n  :labels=\"{\n    chatInputPlaceholder: 'Ask your agent anything\u2026',\n    welcomeMessageText: 'How can I help you today?',\n    chatDisclaimerText: 'AI responses may be inaccurate.',\n  }\"\n/>",
+   "rendered": true
+  }
+ ],
+ "frontend-tools": [
+  {
+   "lang": "vue",
+   "title": "src/components/DashboardAgent.vue",
+   "code": "<script setup lang=\"ts\">\nimport { ref } from \"vue\";\nimport { z } from \"zod\";\nimport { CopilotChat, useFrontendTool } from \"@copilotkit/vue/v2\";\n\nconst severity = ref(\"all\");\n\nuseFrontendTool(\n  {\n    name: \"filter_incidents\",\n    description: \"Filter the visible incident list by severity.\",\n    parameters: z.object({\n      severity: z.enum([\"all\", \"sev1\", \"sev2\", \"sev3\"]),\n    }),\n    handler: async ({ severity: nextSeverity }) => {\n      severity.value = nextSeverity;\n      return { applied: true, severity: nextSeverity };\n    },\n  },\n  [severity],\n);\n</script>\n\n<template>\n  <p>Current filter: {{ severity }}</p>\n  <CopilotChat />\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport DashboardAgent from \"./components/DashboardAgent.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <DashboardAgent />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  }
+ ],
+ "generative-ui__mcp-apps": [
+  {
+   "lang": "ts",
+   "title": "server.ts",
+   "code": "import { CopilotRuntime } from \"@copilotkit/runtime/v2\";\n\nconst runtime = new CopilotRuntime({\n  agents: { default: agent },\n  mcpApps: {\n    servers: [\n      {\n        type: \"http\",\n        url: \"https://mcp.example.com/mcp\",\n        serverId: \"support-tools\",\n      },\n    ],\n  },\n});",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <main style=\"height: 100dvh\"><CopilotChat /></main>\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "Trusted widget configuration",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\n</script>\n\n<template>\n  <CopilotKitProvider\n    runtime-url=\"/api/copilotkit\"\n    :mcp-apps=\"{ allowSameOriginFallback: true }\"\n  >\n    <CopilotChat />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "typescript",
+   "title": null,
+   "code": "{\n  type: \"http\",\n  url: \"http://localhost:3101/mcp\",\n  serverId: \"my-http-server\"\n}",
+   "rendered": true
+  },
+  {
+   "lang": "typescript",
+   "title": null,
+   "code": "{\n  type: \"sse\",\n  url: \"https://mcp.example.com/sse\",\n  headers: {\n    \"Authorization\": \"Bearer token\"\n  },\n  serverId: \"my-sse-server\"\n}",
+   "rendered": true
+  }
+ ],
+ "generative-ui__state-rendering": [
+  {
+   "lang": "vue",
+   "title": "src/components/ResearchProgress.vue",
+   "code": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport { useAgent, UseAgentUpdate } from \"@copilotkit/vue/v2\";\n\ntype ResearchState = { status?: string; draft?: string; completed?: number; total?: number };\n\nconst { agent } = useAgent({\n  agentId: \"researcher\",\n  updates: [UseAgentUpdate.OnStateChanged, UseAgentUpdate.OnRunStatusChanged],\n});\n\nconst state = computed(() => (agent.value?.state ?? {}) as ResearchState);\n</script>\n\n<template>\n  <section aria-live=\"polite\">\n    <p>{{ state.status ?? \"Idle\" }}</p>\n    <progress :value=\"state.completed ?? 0\" :max=\"state.total ?? 1\" />\n    <article v-if=\"state.draft\">{{ state.draft }}</article>\n  </section>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport ResearchProgress from \"./components/ResearchProgress.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <ResearchProgress />\n    <CopilotChat agent-id=\"researcher\" />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "python",
+   "title": null,
+   "code": "# src/agents/shared_state_streaming.py\nimport uuid\n\nfrom langchain.agents import AgentState as BaseAgentState, create_agent\nfrom langchain.tools import ToolRuntime, tool\nfrom langchain_core.messages import ToolMessage\nfrom langchain_openai import ChatOpenAI\nfrom langgraph.types import Command\n\nfrom copilotkit import (\n    CopilotKitMiddleware,\n    StateItem,\n    StateStreamingMiddleware,\n)\n\n\nclass AgentState(BaseAgentState):\n    \"\"\"Shared state. `document` is streamed token-by-token.\"\"\"\n\n    document: str\n\n\n@tool\ndef write_document(document: str, runtime: ToolRuntime) -> Command:\n    \"\"\"Write a document for the user.\n\n    Always call this tool when the user asks you to write or draft\n    something of any length (an essay, poem, email, summary, etc.).\n    The `document` argument is streamed *per token* into shared agent\n    state under the `document` key, so the UI can render it as it is\n    generated.\n    \"\"\"\n    return Command(\n        update={\n            \"document\": document,\n            \"messages\": [\n                ToolMessage(\n                    content=\"Document written to shared state.\",\n                    name=\"write_document\",\n                    id=str(uuid.uuid4()),\n                    tool_call_id=runtime.tool_call_id,\n                )\n            ],\n        }\n    )\n\n\ngraph = create_agent(\n    model=ChatOpenAI(reasoning_effort=\"none\", model=\"gpt-6-luna\"),\n    tools=[write_document],\n    middleware=[\n        CopilotKitMiddleware(),\n        # Forward every token of write_document's `document` argument\n        # straight into state[\"document\"] while the tool call is still\n        # streaming. Without this, `document` would only update once\n        # the tool call completes.\n        #\n        # NOTE: the frontend `usePredictStateSubscription` hook indexes\n        # the (partial-JSON-parsed) tool args by `state_key`, so the\n        # tool's argument name MUST match `state_key` (\"document\") for\n        # per-token deltas to land in `state.document`.\n        StateStreamingMiddleware(\n            StateItem(\n                state_key=\"document\",\n                tool=\"write_document\",\n                tool_argument=\"document\",\n            )\n        ),\n    ],\n    state_schema=AgentState,\n    system_prompt=(\n        \"You are a collaborative writing assistant. Whenever the user asks \"\n        \"you to write, draft, or revise any piece of text, ALWAYS call the \"\n        \"`write_document` tool with the full content as a single string in \"\n        \"the `document` argument. Never paste the document into a chat \"\n        \"message directly \u2014 the document belongs in shared state and the \"\n        \"UI renders it live as you type.\"\n    ),\n)",
+   "rendered": false
+  }
+ ],
+ "generative-ui__tool-based": [
+  {
+   "lang": "vue",
+   "title": "src/components/WeatherCard.vue",
+   "code": "<script setup lang=\"ts\">\ndefineProps<{ city: string; temperature: number; condition: string }>();\n</script>\n\n<template>\n  <article>\n    <strong>{{ city }}</strong>\n    <p>{{ temperature }}\u00b0 \u00b7 {{ condition }}</p>\n  </article>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/AgentExperience.vue",
+   "code": "<script setup lang=\"ts\">\nimport { z } from \"zod\";\nimport { CopilotChat, useComponent } from \"@copilotkit/vue/v2\";\nimport WeatherCard from \"./WeatherCard.vue\";\n\nuseComponent({\n  name: \"show_weather\",\n  description: \"Display the weather for one city.\",\n  parameters: z.object({\n    city: z.string(),\n    temperature: z.number(),\n    condition: z.string(),\n  }),\n  render: WeatherCard,\n});\n</script>\n\n<template><CopilotChat /></template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport AgentExperience from \"./components/AgentExperience.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <AgentExperience />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  }
+ ],
+ "generative-ui__tool-rendering": [
+  {
+   "lang": "vue",
+   "title": "src/components/AgentExperience.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, useDefaultRenderTool } from \"@copilotkit/vue/v2\";\n\nuseDefaultRenderTool();\n</script>\n\n<template><CopilotChat /></template>",
+   "rendered": true
+  },
+  {
+   "lang": "ts",
+   "title": "src/components/AgentExperience.vue",
+   "code": "useDefaultRenderTool({ render: BrandedToolCard });",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/WeatherToolCard.vue",
+   "code": "<script setup lang=\"ts\">\ndefineProps<{\n  parameters: { city?: string };\n  status: \"inProgress\" | \"executing\" | \"complete\";\n  result?: string;\n}>();\n</script>\n\n<template>\n  <p v-if=\"status !== 'complete'\">Checking {{ parameters.city ?? \"\u2026\" }}</p>\n  <article v-else>\n    <strong>{{ parameters.city }}</strong>\n    <pre>{{ result }}</pre>\n  </article>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/AgentExperience.vue",
+   "code": "<script setup lang=\"ts\">\nimport { z } from \"zod\";\nimport { CopilotChat, useDefaultRenderTool, useRenderTool } from \"@copilotkit/vue/v2\";\nimport WeatherToolCard from \"./WeatherToolCard.vue\";\n\nuseRenderTool({\n  name: \"get_weather\",\n  parameters: z.object({ city: z.string() }),\n  render: WeatherToolCard,\n});\n\nuseDefaultRenderTool(); // wildcard fallback for every other tool\n</script>\n\n<template><CopilotChat /></template>",
+   "rendered": true
+  },
+  {
+   "lang": "ts",
+   "title": null,
+   "code": "useRenderTool({ name: \"get_weather\", parameters, render: WeatherToolCard }, [locale]);",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport AgentExperience from \"./components/AgentExperience.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\"><AgentExperience /></CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "python",
+   "title": null,
+   "code": "# src/agents/tool_rendering_agent.py\nfrom random import choice, randint\n\nfrom langchain.agents import create_agent\nfrom langchain.agents.middleware import AgentState, before_model\nfrom langchain.tools import tool\nfrom langchain_core.messages import AIMessage, ToolMessage\nfrom langchain_openai import ChatOpenAI\nfrom langgraph.runtime import Runtime\nfrom copilotkit import CopilotKitMiddleware\n\n# Multi-tool-per-question prompt.\n#\n# This backend serves the tool-rendering demos, whose JOB is to show the\n# rendering patterns (per-tool, catch-all, default fallback). The agent\n# may call multiple tools per turn when the user asks for them. The\n# `roll_d20` tool accepts a deterministic `value` parameter so the\n# aimock fixtures can script the exact dice sequence the e2e tests\n# assert against.\nSYSTEM_PROMPT = (\n    \"You are a travel & lifestyle concierge. Use the mock tools for \"\n    \"weather, flights, stock prices, or d20 rolls when the user asks; \"\n    \"otherwise reply in plain text. For flights, default origin to 'SFO' \"\n    \"if the user only names a destination. Call multiple tools in one \"\n    \"turn if asked. After tools return, summarize in one short sentence. \"\n    \"Never fabricate data a tool could provide.\"\n)\n\n\n@tool\ndef get_weather(location: str) -> dict:\n    \"\"\"Get the current weather for a given location.\"\"\"\n    return {\n        \"city\": location,\n        \"temperature\": 68,\n        \"humidity\": 55,\n        \"wind_speed\": 10,\n        \"conditions\": \"Sunny\",\n    }\n\n",
+   "rendered": false
+  }
+ ],
+ "headless-threads": [
+  {
+   "lang": "typescript",
+   "title": "server.ts",
+   "code": "import {\n  CopilotKitIntelligence,\n  CopilotRuntime,\n} from \"@copilotkit/runtime/v2\";\n\nconst runtime = new CopilotRuntime({\n  agents: { default: agent },\n  intelligence: new CopilotKitIntelligence({\n    apiKey: process.env.CPK_INTELLIGENCE_API_KEY!,\n  }),\n  identifyUser: async (request) => {\n    const session = await verifyAppSession(request);\n    if (!session?.user) throw new Error(\"Unauthorized\");\n    return { id: session.user.id, name: session.user.name };\n  },\n  // generateThreadNames: false,\n  // lockTtlSeconds: 20,\n  // lockHeartbeatIntervalSeconds: 15,\n  // lockKeyPrefix: \"my-app\",\n});",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/ThreadSidebar.vue",
+   "code": "<script setup lang=\"ts\">\nimport {\n  useCopilotChatConfiguration,\n  useThreads,\n} from \"@copilotkit/vue/v2\";\n\nconst config = useCopilotChatConfiguration();\nconst {\n  threads,\n  isLoading,\n  renameThread,\n  archiveThread,\n  deleteThread,\n} = useThreads({ agentId: \"my-agent\" });\n</script>\n\n<template>\n  <p v-if=\"isLoading\">Loading\u2026</p>\n  <ul v-else>\n    <li v-for=\"thread in threads\" :key=\"thread.id\">\n      <button\n        @click=\"config?.setActiveThreadId(thread.id, { explicit: true })\"\n      >\n        {{ thread.name ?? \"New conversation\" }}\n      </button>\n      <button @click=\"renameThread(thread.id, 'Renamed')\">Rename</button>\n      <button @click=\"archiveThread(thread.id)\">Archive</button>\n      <button @click=\"deleteThread(thread.id)\">Delete</button>\n    </li>\n  </ul>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport {\n  CopilotChat,\n  CopilotChatConfigurationProvider,\n  CopilotKitProvider,\n} from \"@copilotkit/vue/v2\";\nimport ThreadSidebar from \"./components/ThreadSidebar.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <CopilotChatConfigurationProvider agent-id=\"my-agent\">\n      <div class=\"flex\" style=\"height: 100dvh\">\n        <ThreadSidebar />\n        <CopilotChat />\n      </div>\n    </CopilotChatConfigurationProvider>\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<script setup lang=\"ts\">\nconst {\n  threads,\n  hasMoreThreads,\n  isFetchingMoreThreads,\n  fetchMoreThreads,\n} = useThreads({ agentId: \"my-agent\", limit: 20 });\n</script>\n\n<template>\n  <button\n    v-if=\"hasMoreThreads\"\n    :disabled=\"isFetchingMoreThreads\"\n    @click=\"fetchMoreThreads\"\n  >\n    {{ isFetchingMoreThreads ? \"Loading\u2026\" : \"Load more\" }}\n  </button>\n</template>",
+   "rendered": true
+  }
+ ],
+ "human-in-the-loop": [
+  {
+   "lang": "vue",
+   "title": "src/components/MeetingApproval.vue",
+   "code": "<script setup lang=\"ts\">\nimport { z } from \"zod\";\nimport { useHumanInTheLoop } from \"@copilotkit/vue/v2\";\nimport TimePickerCard from \"./TimePickerCard.vue\";\n\nuseHumanInTheLoop({\n  name: \"schedule_meeting\",\n  description: \"Ask the user to select a meeting time.\",\n  parameters: z.object({\n    topic: z.string(),\n    attendee: z.string(),\n  }),\n  render: TimePickerCard,\n});\n</script>\n\n<template><p>Meeting approval tool registered.</p></template>",
+   "rendered": true
+  }
+ ],
+ "human-in-the-loop__governed-actions": [
+  {
+   "lang": "ts",
+   "title": null,
+   "code": "type GovernedAction = {\n  id: string;\n  summary: string;\n  tool: string;\n  reference: string;\n  verdict: \"allow\" | \"deny\" | \"require_approval\";\n  arguments: Record<string, unknown>;\n};",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/GovernedActionApproval.vue",
+   "code": "<script setup lang=\"ts\">\nimport { computed, watchEffect } from \"vue\";\nimport { useInterrupt } from \"@copilotkit/vue/v2\";\n\ntype GovernedAction = {\n  id: string;\n  summary: string;\n  tool: string;\n  reference: string;\n  verdict: \"allow\" | \"deny\" | \"require_approval\";\n  arguments: Record<string, unknown>;\n};\n\nconst { slotProps } = useInterrupt({ renderInChat: false });\nconst action = computed(\n  () => slotProps.value?.interrupt?.metadata?.action as\n    | GovernedAction\n    | undefined,\n);\n\nasync function approve(approved: boolean) {\n  const current = action.value;\n  if (!current || !slotProps.value) return;\n\n  await slotProps.value.resolve({\n    approved,\n    actionId: current.id,\n    reference: current.reference,\n  });\n}\n\nwatchEffect(() => {\n  if (action.value?.verdict === \"allow\") void approve(true);\n  if (action.value?.verdict === \"deny\") void slotProps.value?.cancel();\n});\n</script>\n\n<template>\n  <section v-if=\"action\" class=\"rounded-lg border p-4 shadow-sm\">\n    <p>\n      {{\n        action.verdict === \"allow\"\n          ? \"Allowed by policy\"\n          : action.verdict === \"deny\"\n            ? \"Blocked by policy\"\n            : \"User approval required\"\n      }}\n    </p>\n    <h3>{{ action.summary }}</h3>\n    <p>Tool: {{ action.tool }}</p>\n    <p>Reference: {{ action.reference }}</p>\n    <pre>{{ JSON.stringify(action.arguments, null, 2) }}</pre>\n    <div v-if=\"action.verdict === 'require_approval'\">\n      <button @click=\"approve(true)\">Approve and run</button>\n      <button @click=\"approve(false)\">Reject</button>\n    </div>\n  </section>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "ts",
+   "title": null,
+   "code": "type ApprovalResponse = {\n  approved: boolean;\n  actionId: string;\n  reference: string;\n};\n\nasync function handleApproval(\n  action: GovernedAction,\n  response: ApprovalResponse,\n) {\n  if (\n    response.approved &&\n    response.actionId === action.id &&\n    response.reference === action.reference\n  ) {\n    return executeSideEffect(action.tool, action.arguments);\n  }\n\n  return {\n    skipped: true,\n    reason: \"The user did not approve this action.\",\n  };\n}",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/GovernedActionTool.vue",
+   "code": "<script setup lang=\"ts\">\nimport { z } from \"zod\";\nimport { useHumanInTheLoop } from \"@copilotkit/vue/v2\";\nimport GovernedActionCard from \"./GovernedActionCard.vue\";\n\nconst governedActionSchema = z.object({\n  id: z.string(),\n  summary: z.string(),\n  tool: z.string(),\n  reference: z.string(),\n  verdict: z.enum([\"allow\", \"deny\", \"require_approval\"]),\n  arguments: z.record(z.unknown()),\n});\n\nuseHumanInTheLoop({\n  name: \"approve_governed_action\",\n  description:\n    \"Ask the user to approve a governed side-effect action before it runs.\",\n  parameters: governedActionSchema,\n  render: GovernedActionCard,\n});\n</script>\n\n<template><p>Governed action tool registered.</p></template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/GovernedActionCard.vue",
+   "code": "<script setup lang=\"ts\">\nimport { computed, ref, watchEffect } from \"vue\";\n\nconst props = defineProps<{\n  args: {\n    id?: string;\n    summary?: string;\n    reference?: string;\n    verdict?: \"allow\" | \"deny\" | \"require_approval\";\n  };\n  respond?: (result: unknown) => Promise<void>;\n}>();\n\nconst submitted = ref(false);\nconst ready = computed(() =>\n  Boolean(props.respond && props.args.id && props.args.reference && props.args.verdict),\n);\n\nfunction submitDecision(approved: boolean) {\n  if (!ready.value || submitted.value || !props.respond) return;\n  if (approved && props.args.verdict === \"deny\") return;\n  submitted.value = true;\n  void props.respond({\n    approved,\n    actionId: props.args.id,\n    reference: props.args.reference,\n  });\n}\n\nwatchEffect(() => {\n  if (props.args.verdict === \"allow\") submitDecision(true);\n  if (props.args.verdict === \"deny\") submitDecision(false);\n});\n</script>\n\n<template>\n  <section>\n    <p v-if=\"props.args.verdict === 'allow'\">Allowed by policy</p>\n    <p v-else-if=\"props.args.verdict === 'deny'\">Blocked by policy</p>\n    <p>{{ props.args.summary ?? \"Preparing approval\u2026\" }}</p>\n    <div v-if=\"ready && !submitted && props.args.verdict === 'require_approval'\">\n      <button @click=\"submitDecision(true)\">Approve and run</button>\n      <button @click=\"submitDecision(false)\">Reject</button>\n    </div>\n  </section>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport GovernedActionApproval from \"./components/GovernedActionApproval.vue\";\nimport GovernedActionTool from \"./components/GovernedActionTool.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <GovernedActionApproval />\n    <GovernedActionTool />\n    <CopilotChat />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  }
+ ],
+ "human-in-the-loop__headless": [
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport HeadlessInterruptPanel from \"./components/HeadlessInterruptPanel.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <HeadlessInterruptPanel />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  }
+ ],
+ "human-in-the-loop__useInterrupt": [
+  {
+   "lang": "text",
+   "title": null,
+   "code": "outcome.type === \"interrupt\"\noutcome.interrupts  // Interrupt[]",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/ApprovalPanel.vue",
+   "code": "<script setup lang=\"ts\">\nimport { useInterrupt } from \"@copilotkit/vue/v2\";\n\nconst { slotProps } = useInterrupt({ renderInChat: false });\n</script>\n\n<template>\n  <section v-if=\"slotProps\">\n    <p>{{ slotProps.interrupt?.message ?? \"Approve this action?\" }}</p>\n    <button @click=\"slotProps.resolve({ approved: true })\">Approve</button>\n    <button @click=\"slotProps.cancel()\">Cancel</button>\n  </section>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<template>\n  <ul v-if=\"slotProps\">\n    <li v-for=\"item in slotProps.interrupts\" :key=\"item.id\">\n      {{ item.message }}\n      <button @click=\"slotProps.resolve({ ok: true }, item.id)\">Approve</button>\n      <button @click=\"slotProps.cancel(item.id)\">Cancel</button>\n    </li>\n  </ul>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport MeetingChat from \"./components/MeetingChat.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <MeetingChat />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  }
+ ],
+ "multi-agent__subagents": [
+  {
+   "lang": "python",
+   "title": null,
+   "code": "# src/agents/subagents.py\nimport operator\nimport uuid\nfrom typing import Annotated, Literal, TypedDict\n\nfrom langchain.agents import AgentState as BaseAgentState, create_agent\nfrom langchain.tools import ToolRuntime, tool\nfrom langchain_core.messages import AIMessage, HumanMessage, ToolMessage\nfrom langchain_openai import ChatOpenAI\nfrom langgraph.types import Command\n\nfrom copilotkit import CopilotKitMiddleware\n\nfrom src.agents._header_forwarding_middleware import HeaderForwardingMiddleware\n\n\n# ---------------------------------------------------------------------------\n# Shared state\n# ---------------------------------------------------------------------------\n\n\nclass Delegation(TypedDict):\n    id: str\n    sub_agent: Literal[\"research_agent\", \"writing_agent\", \"critique_agent\"]\n    task: str\n    status: Literal[\"completed\"]\n    result: str\n\n\n# Cap the supervisor \u2192 critique sub-agent loop at a single iteration.\n# Without this, the supervisor LLM occasionally re-calls `critique_agent`\n# repeatedly on the same draft (visible as stacking \ud83e\uddd0 cards in the\n# chat). The critic only adds value once per draft, so we hard-stop\n# after `_MAX_CRITIQUE_ITERATIONS` invocations and return a no-op\n# result.\n_MAX_CRITIQUE_ITERATIONS = 1\n\n\nclass AgentState(BaseAgentState):\n    \"\"\"Shared state. `delegations` is rendered as a live log in the UI.\n\n    `delegations` uses an `operator.add` reducer so that concurrent\n    sub-agent emissions in the same supervisor step accumulate into a\n    single list instead of conflicting (LangGraph would otherwise raise\n    `INVALID_CONCURRENT_GRAPH_UPDATE` \u2014 \"Can receive only one value per\n    step. Use an Annotated key to handle multiple values.\").\n    \"\"\"\n\n    delegations: Annotated[list[Delegation], operator.add]\n\n\n# ---------------------------------------------------------------------------\n# Sub-agents (real LLM agents under the hood)\n# ---------------------------------------------------------------------------\n\n# Each sub-agent is a full-fledged `create_agent(...)` with its own\n# system prompt. They don't share memory or tools with the supervisor \u2014\n# the supervisor only sees their return value.\n_sub_model = ChatOpenAI(reasoning_effort=\"none\", model=\"gpt-6-luna\")\n\n# Each sub-agent gets the minimal HeaderForwardingMiddleware so the\n# inbound x-aimock-context (and other x-*) headers from the supervisor's\n# inbound HTTP request propagate to the sub-agent's outbound LLM call.\n# We intentionally do NOT attach the full CopilotKitMiddleware here \u2014\n# the supervisor handles App-Context / frontend-tool injection for the\n# whole run, and adding it on sub-agents would double-inject prompt\n# state. Header forwarding alone is enough to keep aimock matching.\n_research_agent = create_agent(\n    model=_sub_model,\n    tools=[],\n    system_prompt=(\n        \"You are a research sub-agent. Given a topic, produce a concise \"\n        \"bulleted list of 3-5 key facts. No preamble, no closing.\"\n    ),\n    middleware=[HeaderForwardingMiddleware()],\n)\n\n_writing_agent = create_agent(\n    model=_sub_model,\n    tools=[],\n    system_prompt=(\n        \"You are a writing sub-agent. Given a brief and optional source \"\n        \"facts, produce a polished 1-paragraph draft. Be clear and \"\n        \"concrete. No preamble.\"\n    ),\n    middleware=[HeaderForwardingMiddleware()],\n)\n\n_critique_agent = create_agent(\n    model=_sub_model,\n    tools=[],\n    system_prompt=(\n        \"You are an editorial critique sub-agent. Given a draft, give \"\n        \"2-3 crisp, actionable critiques. No preamble.\"\n    ),\n    middleware=[HeaderForwardingMiddleware()],\n)",
+   "rendered": false
+  },
+  {
+   "lang": "python",
+   "title": null,
+   "code": "# src/agents/subagents.py\nimport operator\nimport uuid\nfrom typing import Annotated, Literal, TypedDict\n\nfrom langchain.agents import AgentState as BaseAgentState, create_agent\nfrom langchain.tools import ToolRuntime, tool\nfrom langchain_core.messages import AIMessage, HumanMessage, ToolMessage\nfrom langchain_openai import ChatOpenAI\nfrom langgraph.types import Command\n\nfrom copilotkit import CopilotKitMiddleware\n\nfrom src.agents._header_forwarding_middleware import HeaderForwardingMiddleware\n\n\n# ---------------------------------------------------------------------------\n# Shared state\n# ---------------------------------------------------------------------------\n\n\nclass Delegation(TypedDict):\n    id: str\n    sub_agent: Literal[\"research_agent\", \"writing_agent\", \"critique_agent\"]\n    task: str\n    status: Literal[\"completed\"]\n    result: str\n\n\n# Cap the supervisor \u2192 critique sub-agent loop at a single iteration.\n# Without this, the supervisor LLM occasionally re-calls `critique_agent`\n# repeatedly on the same draft (visible as stacking \ud83e\uddd0 cards in the\n# chat). The critic only adds value once per draft, so we hard-stop\n# after `_MAX_CRITIQUE_ITERATIONS` invocations and return a no-op\n# result.\n_MAX_CRITIQUE_ITERATIONS = 1\n\n\nclass AgentState(BaseAgentState):\n    \"\"\"Shared state. `delegations` is rendered as a live log in the UI.\n\n    `delegations` uses an `operator.add` reducer so that concurrent\n    sub-agent emissions in the same supervisor step accumulate into a\n    single list instead of conflicting (LangGraph would otherwise raise\n    `INVALID_CONCURRENT_GRAPH_UPDATE` \u2014 \"Can receive only one value per\n    step. Use an Annotated key to handle multiple values.\").\n    \"\"\"\n\n    delegations: Annotated[list[Delegation], operator.add]\n\n\n# ---------------------------------------------------------------------------\n# Sub-agents (real LLM agents under the hood)\n# ---------------------------------------------------------------------------\n\n# Each sub-agent is a full-fledged `create_agent(...)` with its own\n# system prompt. They don't share memory or tools with the supervisor \u2014\n# the supervisor only sees their return value.\n_sub_model = ChatOpenAI(reasoning_effort=\"none\", model=\"gpt-6-luna\")\n\n# Each sub-agent gets the minimal HeaderForwardingMiddleware so the\n# inbound x-aimock-context (and other x-*) headers from the supervisor's\n# inbound HTTP request propagate to the sub-agent's outbound LLM call.\n# We intentionally do NOT attach the full CopilotKitMiddleware here \u2014\n# the supervisor handles App-Context / frontend-tool injection for the\n# whole run, and adding it on sub-agents would double-inject prompt\n# state. Header forwarding alone is enough to keep aimock matching.\n_research_agent = create_agent(\n    model=_sub_model,\n    tools=[],\n    system_prompt=(\n        \"You are a research sub-agent. Given a topic, produce a concise \"\n        \"bulleted list of 3-5 key facts. No preamble, no closing.\"\n    ),\n    middleware=[HeaderForwardingMiddleware()],\n)\n\n_writing_agent = create_agent(\n    model=_sub_model,\n    tools=[],\n    system_prompt=(\n        \"You are a writing sub-agent. Given a brief and optional source \"\n        \"facts, produce a polished 1-paragraph draft. Be clear and \"\n        \"concrete. No preamble.\"\n    ),\n    middleware=[HeaderForwardingMiddleware()],\n)\n\n_critique_agent = create_agent(\n    model=_sub_model,\n    tools=[],\n    system_prompt=(\n        \"You are an editorial critique sub-agent. Given a draft, give \"\n        \"2-3 crisp, actionable critiques. No preamble.\"\n    ),\n    middleware=[HeaderForwardingMiddleware()],\n)\n\n\n# Sentinel surfaced when a sub-agent run produces no usable text. Kept\n# as a module-level constant so the harness probe (and any UI fallback)\n# can match the exact phrase. The leading/trailing angle brackets keep\n# it out of plausible LLM phrasing.\nSUB_AGENT_EMPTY_SENTINEL = \"<sub-agent produced no output>\"\n\n\ndef _invoke_sub_agent(agent, task: str) -> str:\n    \"\"\"Run a sub-agent on `task` and return its final prose message.\"\"\"\n    result = agent.invoke({\"messages\": [HumanMessage(content=task)]})\n    messages = result.get(\"messages\", [])\n    # Walk newest -> oldest so we pick the answer for THIS task, not a stale\n    # intro. Skip empty AIMessages that only carry tool_calls.\n    for msg in reversed(messages):\n        if isinstance(msg, AIMessage):\n            content = msg.content\n            if isinstance(content, str) and content.strip():\n                return content\n            # Some providers stream content as a list of content blocks\n            # (e.g. {\"type\": \"text\", \"text\": \"...\"}); concatenate the text.\n            # The `isinstance(block.get(\"text\"), str)` guard rejects\n            # `{\"type\": \"text\", \"text\": null}` payloads \u2014 a known provider\n            # quirk \u2014 that would otherwise crash `\"\".join(...)` with\n            # `TypeError: sequence item N: expected str instance, NoneType found`.\n            if isinstance(content, list):\n                parts = [\n                    block[\"text\"]\n                    for block in content\n                    if isinstance(block, dict)\n                    and block.get(\"type\") == \"text\"\n                    and isinstance(block.get(\"text\"), str)\n                ]\n                joined = \"\".join(parts).strip()\n                if joined:\n                    return joined\n    return SUB_AGENT_EMPTY_SENTINEL\n\n\ndef _delegation_update(\n    sub_agent: str,\n    task: str,\n    result: str,\n    tool_call_id: str,\n) -> Command:\n    \"\"\"Append a completed delegation entry to shared state.\n\n    Returns just the new entry (a one-element list). The reducer on\n    `AgentState.delegations` is `operator.add`, which concatenates the\n    new list with the prior state \u2014 so we must NOT echo back the\n    existing delegations here, or they would be duplicated each step.\n    \"\"\"\n    entry: Delegation = {\n        \"id\": str(uuid.uuid4()),\n        \"sub_agent\": sub_agent,  # type: ignore[typeddict-item]\n        \"task\": task,\n        \"status\": \"completed\",\n        \"result\": result,\n    }\n    return Command(\n        update={\n            \"delegations\": [entry],\n            \"messages\": [\n                ToolMessage(\n                    content=result,\n                    name=sub_agent,\n                    id=str(uuid.uuid4()),\n                    tool_call_id=tool_call_id,\n                )\n            ],\n        }\n    )\n\n\n# ---------------------------------------------------------------------------\n# Supervisor tools (each tool delegates to one sub-agent)\n# ---------------------------------------------------------------------------\n\n\n# Each @tool wraps a sub-agent invocation. The supervisor LLM \"calls\"\n# these tools to delegate work; each call synchronously runs the\n# matching sub-agent, records the delegation into shared state, and\n# returns the sub-agent's output as a ToolMessage the supervisor can\n# read on its next step.\n@tool\ndef research_agent(task: str, runtime: ToolRuntime) -> Command:\n    \"\"\"Delegate a research task to the research sub-agent.\n\n    Use for: gathering facts, background, definitions, statistics.\n    Returns a bulleted list of key facts.\n    \"\"\"\n    result = _invoke_sub_agent(_research_agent, task)\n    return _delegation_update(\"research_agent\", task, result, runtime.tool_call_id)\n\n\n@tool\ndef writing_agent(task: str, runtime: ToolRuntime) -> Command:\n    \"\"\"Delegate a drafting task to the writing sub-agent.\n\n    Use for: producing a polished paragraph, draft, or summary. Pass\n    relevant facts from prior research inside `task`.\n    \"\"\"\n    result = _invoke_sub_agent(_writing_agent, task)\n    return _delegation_update(\"writing_agent\", task, result, runtime.tool_call_id)\n\n\n@tool\ndef critique_agent(task: str, runtime: ToolRuntime) -> Command:\n    \"\"\"Delegate a critique task to the critique sub-agent.\n\n    Use for: reviewing a draft and suggesting concrete improvements.\n\n    Capped at `_MAX_CRITIQUE_ITERATIONS` invocations per supervisor run\n    \u2014 the supervisor LLM occasionally re-calls the critic in a loop and\n    each rerun produces near-identical output, so additional calls are\n    short-circuited with a no-op result that nudges the supervisor to\n    finish.\n    \"\"\"\n    state: AgentState = runtime.state  # type: ignore[assignment]\n    delegations = state.get(\"delegations\") or []\n    prior_critiques = sum(\n        1 for d in delegations if d.get(\"sub_agent\") == \"critique_agent\"\n    )\n    if prior_critiques >= _MAX_CRITIQUE_ITERATIONS:\n        # Short-circuit without appending another delegation entry \u2014 the\n        # UI renders one card per delegation and we want exactly one\n        # critic card per supervisor run, even if the LLM ignores the\n        # system prompt and re-issues the call.\n        skip_message = (\n            \"Critique already produced for this run. \"\n            \"Stop calling critique_agent and return your final answer \"\n            \"to the user now.\"\n        )\n        return Command(\n            update={\n                \"messages\": [\n                    ToolMessage(\n                        content=skip_message,\n                        name=\"critique_agent\",\n                        id=str(uuid.uuid4()),\n                        tool_call_id=runtime.tool_call_id,\n                    )\n                ],\n            }\n        )\n    result = _invoke_sub_agent(_critique_agent, task)\n    return _delegation_update(\"critique_agent\", task, result, runtime.tool_call_id)\n\n",
+   "rendered": false
+  }
+ ],
+ "prebuilt-components": [
+  {
+   "lang": "vue",
+   "title": "App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport \"@copilotkit/vue/styles.css\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <CopilotChat agent-id=\"my-agent\" />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  }
+ ],
+ "prebuilt-components__copilot-threads-drawer": [
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport {\n  CopilotChat,\n  CopilotChatConfigurationProvider,\n  CopilotKitProvider,\n  CopilotThreadsDrawer,\n} from \"@copilotkit/vue/v2\";\nimport \"@copilotkit/vue/styles.css\";\n</script>\n\n<template>\n  <CopilotKitProvider\n    runtime-url=\"/api/copilotkit\"\n    public-license-key=\"ck_pub_...\"\n  >\n    <CopilotChatConfigurationProvider agent-id=\"support\">\n      <div style=\"display: flex; height: 100dvh\">\n        <CopilotThreadsDrawer />\n        <CopilotChat />\n      </div>\n    </CopilotChatConfigurationProvider>\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/NewConversationButton.vue",
+   "code": "<script setup lang=\"ts\">\nimport { useCopilotChatConfiguration } from \"@copilotkit/vue/v2\";\n\nconst configuration = useCopilotChatConfiguration();\n\nfunction startNewConversation() {\n  configuration.value?.startNewThread();\n}\n</script>\n\n<template>\n  <button type=\"button\" @click=\"startNewConversation\">New conversation</button>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue with a toolbar button",
+   "code": "<script setup lang=\"ts\">\nimport {\n  CopilotChat,\n  CopilotChatConfigurationProvider,\n  CopilotKitProvider,\n  CopilotThreadsDrawer,\n} from \"@copilotkit/vue/v2\";\nimport NewConversationButton from \"./components/NewConversationButton.vue\";\nimport \"@copilotkit/vue/styles.css\";\n</script>\n\n<template>\n  <CopilotKitProvider\n    runtime-url=\"/api/copilotkit\"\n    public-license-key=\"ck_pub_...\"\n  >\n    <CopilotChatConfigurationProvider agent-id=\"support\">\n      <div style=\"display: flex; height: 100dvh\">\n        <CopilotThreadsDrawer />\n        <main style=\"flex: 1; display: flex; flex-direction: column\">\n          <header><NewConversationButton /></header>\n          <CopilotChat />\n        </main>\n      </div>\n    </CopilotChatConfigurationProvider>\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/ControlledChat.vue",
+   "code": "<script setup lang=\"ts\">\nimport { ref } from \"vue\";\nimport {\n  CopilotChat,\n  CopilotChatConfigurationProvider,\n  CopilotThreadsDrawer,\n} from \"@copilotkit/vue/v2\";\n\nconst threadId = ref<string>(crypto.randomUUID());\nconst selectThread = (id: string) => {\n  threadId.value = id;\n};\nconst startNewConversation = () => {\n  threadId.value = crypto.randomUUID();\n};\n</script>\n\n<template>\n  <CopilotChatConfigurationProvider :thread-id=\"threadId\">\n    <CopilotThreadsDrawer\n      :on-thread-select=\"selectThread\"\n      :on-new-thread=\"startNewConversation\"\n    />\n    <button type=\"button\" @click=\"startNewConversation\">\n      New conversation\n    </button>\n    <CopilotChat />\n  </CopilotChatConfigurationProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "css",
+   "title": null,
+   "code": "copilotkit-threads-drawer::part(new-thread-button),\ncopilotkit-threads-drawer::part(launcher-new-thread) {\n  display: none;\n}",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotThreadsDrawer>\n  <span slot=\"header\">My conversations</span>\n</CopilotThreadsDrawer>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": null,
+   "code": "<CopilotThreadsDrawer>\n  <template #row=\"{ thread }\">\n    <strong>{{ thread.name ?? \"New conversation\" }}</strong>\n  </template>\n</CopilotThreadsDrawer>",
+   "rendered": true
+  }
+ ],
+ "programmatic-control": [
+  {
+   "lang": "vue",
+   "title": "src/components/AgentTrigger.vue",
+   "code": "<script setup lang=\"ts\">\nimport { toRaw } from \"vue\";\nimport { useAgent, useCopilotKit } from \"@copilotkit/vue/v2\";\n\nconst { agent } = useAgent({ agentId: \"sales\" });\nconst { copilotkit } = useCopilotKit();\n\nasync function run() {\n  const current = agent.value;\n  if (!current || current.isRunning) return;\n\n  current.addMessage({\n    id: crypto.randomUUID(),\n    role: \"user\",\n    content: \"Summarize the latest sales data\",\n  });\n\n  try {\n    await copilotkit.value.runAgent({ agent: toRaw(current) });\n  } catch (error) {\n    console.error(\"CopilotKit runAgent failed:\", error);\n  }\n}\n\nfunction stop() {\n  const current = agent.value;\n  if (!current) return;\n  copilotkit.value.stopAgent({ agent: toRaw(current) });\n}\n</script>\n\n<template>\n  <button :disabled=\"agent?.isRunning\" @click=\"run\">Run agent</button>\n  <button :disabled=\"!agent?.isRunning\" @click=\"stop\">Stop</button>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport AgentTrigger from \"./components/AgentTrigger.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <AgentTrigger />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "ts",
+   "title": null,
+   "code": "import { watch } from \"vue\";\n\nwatch(\n  agent,\n  (current, _previous, onCleanup) => {\n    if (!current) return;\n    const subscription = current.subscribe({\n      onRunStartedEvent: () => console.log(\"started\"),\n      onRunFinalized: () => console.log(\"done\"),\n      onRunFailed: ({ error }) => console.error(error),\n    });\n    onCleanup(() => subscription.unsubscribe());\n  },\n  { immediate: true },\n);",
+   "rendered": true
+  }
+ ],
+ "shared-state": [
+  {
+   "lang": "vue",
+   "title": "src/components/SharedWorkspace.vue",
+   "code": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport { useAgent, UseAgentUpdate } from \"@copilotkit/vue/v2\";\n\ntype WorkspaceState = {\n  notes?: string[];\n  preferences?: { tone?: string };\n};\n\nconst { agent } = useAgent({\n  agentId: \"workspace\",\n  updates: [UseAgentUpdate.OnStateChanged],\n});\nconst state = computed(\n  () => (agent.value?.state ?? {}) as WorkspaceState,\n);\n</script>\n\n<template>\n  <ul>\n    <li v-for=\"note in state.notes ?? []\" :key=\"note\">{{ note }}</li>\n  </ul>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/SharedWorkspace.vue",
+   "code": "<script setup lang=\"ts\">\nfunction setTone(tone: string) {\n  const current = agent.value;\n  if (!current) return;\n\n  const previous = (current.state ?? {}) as WorkspaceState;\n  current.setState({\n    ...previous,\n    preferences: { ...previous.preferences, tone },\n  });\n}\n</script>\n\n<template>\n  <button @click=\"setTone('concise')\">Prefer concise answers</button>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport SharedWorkspace from \"./components/SharedWorkspace.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <SharedWorkspace />\n    <CopilotChat agent-id=\"workspace\" />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "python",
+   "title": null,
+   "code": "# src/agents/shared_state_streaming.py\nimport uuid\n\nfrom langchain.agents import AgentState as BaseAgentState, create_agent\nfrom langchain.tools import ToolRuntime, tool\nfrom langchain_core.messages import ToolMessage\nfrom langchain_openai import ChatOpenAI\nfrom langgraph.types import Command\n\nfrom copilotkit import (\n    CopilotKitMiddleware,\n    StateItem,\n    StateStreamingMiddleware,\n)\n\n\nclass AgentState(BaseAgentState):\n    \"\"\"Shared state. `document` is streamed token-by-token.\"\"\"\n\n    document: str\n\n\n@tool\ndef write_document(document: str, runtime: ToolRuntime) -> Command:\n    \"\"\"Write a document for the user.\n\n    Always call this tool when the user asks you to write or draft\n    something of any length (an essay, poem, email, summary, etc.).\n    The `document` argument is streamed *per token* into shared agent\n    state under the `document` key, so the UI can render it as it is\n    generated.\n    \"\"\"\n    return Command(\n        update={\n            \"document\": document,\n            \"messages\": [\n                ToolMessage(\n                    content=\"Document written to shared state.\",\n                    name=\"write_document\",\n                    id=str(uuid.uuid4()),\n                    tool_call_id=runtime.tool_call_id,\n                )\n            ],\n        }\n    )\n\n\ngraph = create_agent(\n    model=ChatOpenAI(reasoning_effort=\"none\", model=\"gpt-6-luna\"),\n    tools=[write_document],\n    middleware=[\n        CopilotKitMiddleware(),\n        # Forward every token of write_document's `document` argument\n        # straight into state[\"document\"] while the tool call is still\n        # streaming. Without this, `document` would only update once\n        # the tool call completes.\n        #\n        # NOTE: the frontend `usePredictStateSubscription` hook indexes\n        # the (partial-JSON-parsed) tool args by `state_key`, so the\n        # tool's argument name MUST match `state_key` (\"document\") for\n        # per-token deltas to land in `state.document`.\n        StateStreamingMiddleware(\n            StateItem(\n                state_key=\"document\",\n                tool=\"write_document\",\n                tool_argument=\"document\",\n            )\n        ),\n    ],\n    state_schema=AgentState,\n    system_prompt=(\n        \"You are a collaborative writing assistant. Whenever the user asks \"\n        \"you to write, draft, or revise any piece of text, ALWAYS call the \"\n        \"`write_document` tool with the full content as a single string in \"\n        \"the `document` argument. Never paste the document into a chat \"\n        \"message directly \u2014 the document belongs in shared state and the \"\n        \"UI renders it live as you type.\"\n    ),\n)",
+   "rendered": false
+  }
+ ],
+ "shared-state__agent-readonly": [
+  {
+   "lang": "vue",
+   "title": "src/components/WorkspaceContext.vue",
+   "code": "<script setup lang=\"ts\">\nimport { ref } from \"vue\";\nimport { useAgentContext } from \"@copilotkit/vue/v2\";\n\nconst workspaceId = ref(\"northstar\");\n\nuseAgentContext({\n  description: \"Active workspace\",\n  value: workspaceId,\n});\n</script>\n\n<template>\n  <p>Workspace: {{ workspaceId }}</p>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport WorkspaceContext from \"./components/WorkspaceContext.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <WorkspaceContext />\n    <CopilotChat />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  }
+ ],
+ "shared-state__rendering-in-app": [
+  {
+   "lang": "vue",
+   "title": "src/components/Canvas.vue",
+   "code": "<script setup lang=\"ts\">\nimport { computed, watchEffect } from \"vue\";\nimport { useAgent, UseAgentUpdate } from \"@copilotkit/vue/v2\";\n\ntype CanvasState = {\n  title: string;\n  items: { id: string; label: string; done: boolean }[];\n};\n\nconst initialState: CanvasState = {\n  title: \"Project launch\",\n  items: [\n    { id: \"research\", label: \"Research user needs\", done: true },\n    { id: \"prototype\", label: \"Build a prototype\", done: false },\n  ],\n};\n\nconst { agent } = useAgent({\n  updates: [UseAgentUpdate.OnStateChanged],\n});\nconst state = computed(\n  () => (agent.value?.state ?? {}) as Partial<CanvasState>,\n);\n\nwatchEffect(() => {\n  const currentAgent = agent.value;\n  if (!currentAgent) return;\n\n  const current = (currentAgent.state ?? {}) as Partial<CanvasState>;\n  const updates: Partial<CanvasState> = {};\n  if (current.title === undefined) updates.title = initialState.title;\n  if (current.items === undefined) updates.items = initialState.items;\n\n  if (Object.keys(updates).length > 0) {\n    currentAgent.setState({ ...current, ...updates });\n  }\n});\n</script>\n\n<template>\n  <main class=\"canvas\">\n    <h1>{{ state.title ?? \"Untitled\" }}</h1>\n    <ul>\n      <li\n        v-for=\"item in state.items ?? []\"\n        :key=\"item.id\"\n        :data-done=\"item.done\"\n      >\n        {{ item.label }}\n      </li>\n    </ul>\n  </main>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport Canvas from \"./components/Canvas.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <div class=\"app-shell\">\n      <Canvas />\n      <CopilotChat />\n    </div>\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "ts",
+   "title": null,
+   "code": "function toggleItem(id: string) {\n  const currentAgent = agent.value;\n  if (!currentAgent) return;\n\n  const current = (currentAgent.state ?? {}) as Partial<CanvasState>;\n  currentAgent.setState({\n    ...current,\n    items: (current.items ?? []).map((item) =>\n      item.id === id ? { ...item, done: !item.done } : item,\n    ),\n  });\n}",
+   "rendered": true
+  }
+ ],
+ "shared-state__streaming": [
+  {
+   "lang": "python",
+   "title": null,
+   "code": "# src/agents/shared_state_streaming.py\nimport uuid\n\nfrom langchain.agents import AgentState as BaseAgentState, create_agent\nfrom langchain.tools import ToolRuntime, tool\nfrom langchain_core.messages import ToolMessage\nfrom langchain_openai import ChatOpenAI\nfrom langgraph.types import Command\n\nfrom copilotkit import (\n    CopilotKitMiddleware,\n    StateItem,\n    StateStreamingMiddleware,\n)\n\n\nclass AgentState(BaseAgentState):\n    \"\"\"Shared state. `document` is streamed token-by-token.\"\"\"\n\n    document: str\n\n\n@tool\ndef write_document(document: str, runtime: ToolRuntime) -> Command:\n    \"\"\"Write a document for the user.\n\n    Always call this tool when the user asks you to write or draft\n    something of any length (an essay, poem, email, summary, etc.).\n    The `document` argument is streamed *per token* into shared agent\n    state under the `document` key, so the UI can render it as it is\n    generated.\n    \"\"\"\n    return Command(\n        update={\n            \"document\": document,\n            \"messages\": [\n                ToolMessage(\n                    content=\"Document written to shared state.\",\n                    name=\"write_document\",\n                    id=str(uuid.uuid4()),\n                    tool_call_id=runtime.tool_call_id,\n                )\n            ],\n        }\n    )\n\n\ngraph = create_agent(\n    model=ChatOpenAI(reasoning_effort=\"none\", model=\"gpt-6-luna\"),\n    tools=[write_document],\n    middleware=[\n        CopilotKitMiddleware(),\n        # Forward every token of write_document's `document` argument\n        # straight into state[\"document\"] while the tool call is still\n        # streaming. Without this, `document` would only update once\n        # the tool call completes.\n        #\n        # NOTE: the frontend `usePredictStateSubscription` hook indexes\n        # the (partial-JSON-parsed) tool args by `state_key`, so the\n        # tool's argument name MUST match `state_key` (\"document\") for\n        # per-token deltas to land in `state.document`.\n        StateStreamingMiddleware(\n            StateItem(\n                state_key=\"document\",\n                tool=\"write_document\",\n                tool_argument=\"document\",\n            )\n        ),\n    ],\n    state_schema=AgentState,\n    system_prompt=(\n        \"You are a collaborative writing assistant. Whenever the user asks \"\n        \"you to write, draft, or revise any piece of text, ALWAYS call the \"\n        \"`write_document` tool with the full content as a single string in \"\n        \"the `document` argument. Never paste the document into a chat \"\n        \"message directly \u2014 the document belongs in shared state and the \"\n        \"UI renders it live as you type.\"\n    ),\n)",
+   "rendered": false
+  },
+  {
+   "lang": "vue",
+   "title": "src/components/StreamingDocument.vue",
+   "code": "<script setup lang=\"ts\">\nimport { computed } from \"vue\";\nimport { useAgent, UseAgentUpdate } from \"@copilotkit/vue/v2\";\n\ntype DocumentState = { document?: string };\n\nconst { agent } = useAgent({\n  agentId: \"writer\",\n  updates: [\n    UseAgentUpdate.OnStateChanged,\n    UseAgentUpdate.OnRunStatusChanged,\n  ],\n});\nconst state = computed(\n  () => (agent.value?.state ?? {}) as DocumentState,\n);\n</script>\n\n<template>\n  <article aria-live=\"polite\">\n    <span v-if=\"agent?.isRunning\">LIVE</span>\n    <p>{{ state.document ?? \"Waiting for a draft\u2026\" }}</p>\n  </article>\n</template>",
+   "rendered": true
+  },
+  {
+   "lang": "vue",
+   "title": "src/App.vue",
+   "code": "<script setup lang=\"ts\">\nimport { CopilotChat, CopilotKitProvider } from \"@copilotkit/vue/v2\";\nimport StreamingDocument from \"./components/StreamingDocument.vue\";\n</script>\n\n<template>\n  <CopilotKitProvider runtime-url=\"/api/copilotkit\">\n    <StreamingDocument />\n    <CopilotChat agent-id=\"writer\" />\n  </CopilotKitProvider>\n</template>",
+   "rendered": true
+  }
+ ],
+ "webmcp": [
+  {
+   "lang": "vue",
+   "title": "OrderSearch.vue",
+   "code": "<script setup lang=\"ts\">\nimport { z } from \"zod\";\nimport { useFrontendTool } from \"@copilotkit/vue/v2\";\n\nuseFrontendTool({\n  name: \"searchOrders\",\n  description: \"Search the signed-in user's orders by status\",\n  parameters: z.object({\n    status: z.enum([\"open\", \"shipped\", \"delivered\"]),\n  }),\n  handler: async ({ status }) => {\n    const orders = await searchOrders(status);\n    return JSON.stringify(orders);\n  },\n  webmcp: {\n    annotations: {\n      readOnlyHint: true,\n    },\n  },\n});\n</script>",
+   "rendered": true
+  },
+  {
+   "lang": "ts",
+   "title": "webmcp.ts",
+   "code": "import { CopilotKitCore } from \"@copilotkit/core\";\nimport { z } from \"zod\";\n\nexport const copilotkit = new CopilotKitCore({\n  tools: [\n    {\n      name: \"searchOrders\",\n      description: \"Search the signed-in user's orders by status\",\n      parameters: z.object({\n        status: z.enum([\"open\", \"shipped\", \"delivered\"]),\n      }),\n      handler: async ({ status }) => {\n        const orders = await searchOrders(status);\n        return JSON.stringify(orders);\n      },\n      webmcp: {\n        annotations: {\n          readOnlyHint: true,\n        },\n      },\n    },\n  ],\n});",
+   "rendered": true
+  }
+ ]
+}
